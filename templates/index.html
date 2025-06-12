@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+
+{% block title %}CallTech - Mis Contactos{% endblock %}
+
+{% block content %}
+<div class="filters-section">
+    <div class="search-box">
+        <heroicon-outline-magnifying-glass class="search-icon w-5 h-5"></heroicon-outline-magnifying-glass>
+        <input type="text" id="searchInput" class="search-input" placeholder="Buscar contactos por nombre, teléfono, email o empresa...">
+    </div>
+    
+    <div class="category-filters">
+        <a href="{{ url_for('index') }}" class="category-chip {% if not selected_category %}active{% endif %}" style="background: var(--primary-color);">
+            <heroicon-outline-users class="w-5 h-5"></heroicon-outline-users>
+            Todos ({{ contacts|length }})
+        </a>
+        {% for category in categories %}
+        <a href="{{ url_for('index', category=category.id) }}" 
+           class="category-chip {% if selected_category == category.id %}active{% endif %}"
+           style="{% if selected_category == category.id %}background: {{ category.color }};{% endif %}"
+           data-category-id="{{ category.id }}">
+            <heroicon-outline-{{ category.icon }} class="w-5 h-5"></heroicon-outline-{{ category.icon }}>
+            {{ category.name }} ({{ category_stats[category.id] }})
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="card-header" style="margin: 2rem 0;">
+    <div>
+        <h2 class="card-title gradient-text">Mis Contactos</h2>
+        <p id="resultsCounter" style="color: var(--text-secondary); font-size: 0.875rem;">
+            {{ contacts|length }} contacto{{ 's' if contacts|length != 1 else '' }}
+        </p>
+    </div>
+    <a href="{{ url_for('add_contact') }}" class="btn btn-primary">
+        <heroicon-outline-plus class="w-5 h-5"></heroicon-outline-plus>
+        Agregar Contacto
+    </a>
+</div>
+
+{% if contacts %}
+<div class="contacts-grid">
+    {% for contact in contacts %}
+    <div class="contact-card" data-contact-id="{{ contact.id }}" data-category-id="{{ contact.category_id }}">
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+            <div class="contact-avatar" style="background: {{ contact.category.color }}">
+                {{ contact.name|initials }}
+            </div>
+            <div style="flex: 1;">
+                <h3 class="contact-name">{{ contact.name }}</h3>
+                
+                {% if contact.phone %}
+                <div class="contact-info">
+                    <heroicon-outline-phone class="w-5 h-5"></heroicon-outline-phone>
+                    {{ contact.phone|format_phone }}
+                </div>
+                {% endif %}
+                
+                {% if contact.email %}
+                <div class="contact-info">
+                    <heroicon-outline-envelope class="w-5 h-5"></heroicon-outline-envelope>
+                    {{ contact.email }}
+                </div>
+                {% endif %}
+                
+                {% if contact.company %}
+                <div class="contact-info">
+                    <heroicon-outline-building-office class="w-5 h-5"></heroicon-outline-building-office>
+                    {{ contact.company }}
+                </div>
+                {% endif %}
+                
+                <div class="contact-category" style="background: {{ contact.category.color }}">
+                    <heroicon-outline-{{ contact.category.icon }} class="w-4 h-4"></heroicon-outline-{{ contact.category.icon }}>
+                    {{ contact.category.name }}
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-actions">
+            <a href="{{ url_for('view_contact', id=contact.id) }}" class="btn btn-outline" title="Ver detalles">
+                <heroicon-outline-eye class="w-5 h-5"></heroicon-outline-eye>
+            </a>
+            <a href="{{ url_for('edit_contact', id=contact.id) }}" class="btn btn-secondary" title="Editar">
+                <heroicon-outline-pencil class="w-5 h-5"></heroicon-outline-pencil>
+            </a>
+            <form action="{{ url_for('delete_contact', id=contact.id) }}" method="POST" style="display: inline;">
+                <button type="submit" class="btn btn-danger" title="Eliminar" 
+                        onclick="return confirm('¿Estás seguro de que deseas eliminar este contacto?')">
+                    <heroicon-outline-trash class="w-5 h-5"></heroicon-outline-trash>
+                </button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div id="noResults" class="card" style="text-align: center; padding: 3rem;">
+    <div style="font-size: 3rem; margin-bottom: 1rem;">📱</div>
+    <h3 style="margin-bottom: 1rem; color: var(--text-primary);">No hay contactos</h3>
+    <p style="color: var(--text-secondary); margin-bottom: 2rem;">
+        {% if selected_category %}
+            No hay contactos en esta categoría.
+        {% else %}
+            Comienza agregando tu primer contacto.
+        {% endif %}
+    </p>
+    <a href="{{ url_for('add_contact') }}" class="btn btn-primary">
+        <heroicon-outline-plus class="w-5 h-5"></heroicon-outline-plus>
+        Agregar Contacto
+    </a>
+</div>
+{% endif %}
+
+<!-- Animación de carga -->
+<div id="loadingIndicator" style="display: none; text-align: center; padding: 2rem;">
+    <div class="loading"></div>
+    <p style="margin-top: 1rem; color: var(--text-secondary);">Cargando contactos...</p>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Inicializar búsqueda y filtros
+    initializeSearch();
+    initializeCategoryFilters();
+    
+    // Animación de entrada para las tarjetas
+    const cards = document.querySelectorAll('.contact-card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

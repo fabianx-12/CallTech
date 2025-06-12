@@ -1,0 +1,463 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile.name }} - CallTech{% endblock %}
+
+{% block content %}
+<div class="public-profile-container">
+    <!-- Header del perfil público -->
+    <div class="public-profile-header">
+        <div class="profile-avatar-large">
+            {{ profile.name|initials }}
+        </div>
+        <h1 class="profile-name-large">{{ profile.name }}</h1>
+        {% if profile.company %}
+        <div class="profile-company-large">{{ profile.company }}</div>
+        {% endif %}
+        {% if profile.bio %}
+        <div class="profile-bio-large">{{ profile.bio }}</div>
+        {% endif %}
+    </div>
+
+    <!-- Información de contacto -->
+    <div class="contact-info-section">
+        <h3 class="section-title">Información de Contacto</h3>
+        <div class="contact-info-grid">
+            {% if profile.phone %}
+            <div class="contact-info-item">
+                <div class="contact-info-icon">
+                    <heroicon-outline-phone class="w-6 h-6"></heroicon-outline-phone>
+                </div>
+                <div class="contact-info-content">
+                    <div class="contact-info-label">Teléfono</div>
+                    <div class="contact-info-value">{{ profile.phone|format_phone }}</div>
+                    <a href="tel:{{ profile.phone }}" class="contact-action-btn">
+                        <heroicon-outline-phone class="w-4 h-4"></heroicon-outline-phone>
+                        Llamar
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if profile.email %}
+            <div class="contact-info-item">
+                <div class="contact-info-icon">
+                    <heroicon-outline-envelope class="w-6 h-6"></heroicon-outline-envelope>
+                </div>
+                <div class="contact-info-content">
+                    <div class="contact-info-label">Email</div>
+                    <div class="contact-info-value">{{ profile.email }}</div>
+                    <a href="mailto:{{ profile.email }}" class="contact-action-btn">
+                        <heroicon-outline-envelope class="w-4 h-4"></heroicon-outline-envelope>
+                        Enviar Email
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Acciones principales -->
+    <div class="main-actions">
+        <button class="btn btn-primary btn-large" onclick="addToContacts()">
+            <heroicon-outline-plus class="w-6 h-6"></heroicon-outline-plus>
+            Agregar a Contactos
+        </button>
+        
+        <button class="btn btn-secondary btn-large" onclick="shareProfile()">
+            <heroicon-outline-share class="w-6 h-6"></heroicon-outline-share>
+            Compartir Perfil
+        </button>
+        
+        <button class="btn btn-outline btn-large" onclick="downloadVCard()">
+            <heroicon-outline-arrow-down-tray class="w-6 h-6"></heroicon-outline-arrow-down-tray>
+            Descargar vCard
+        </button>
+    </div>
+
+    <!-- Información adicional -->
+    <div class="additional-info">
+        <div class="info-card">
+            <div class="info-icon">
+                <heroicon-outline-shield-check class="w-8 h-8"></heroicon-outline-shield-check>
+            </div>
+            <div class="info-content">
+                <h4>Perfil Verificado</h4>
+                <p>Este perfil está verificado por CallTech</p>
+            </div>
+        </div>
+        
+        <div class="info-card">
+            <div class="info-icon">
+                <heroicon-outline-clock class="w-8 h-8"></heroicon-outline-clock>
+            </div>
+            <div class="info-content">
+                <h4>Siempre Actualizado</h4>
+                <p>La información se mantiene actualizada automáticamente</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer del perfil público -->
+    <div class="public-profile-footer">
+        <div class="calltech-branding">
+            <div class="logo-small">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                </svg>
+            </div>
+            <span>Creado con CallTech</span>
+        </div>
+        <a href="{{ url_for('index') }}" class="get-calltech-btn">
+            Obtener CallTech
+        </a>
+    </div>
+</div>
+
+<!-- Modal para agregar a contactos -->
+<div id="addContactModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Agregar a Contactos</h3>
+            <button class="modal-close" onclick="CallTech.closeModal('addContactModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="addContactForm">
+                <div class="form-group">
+                    <label for="category_select" class="form-label">Categoría</label>
+                    <select id="category_select" class="form-select" required>
+                        <option value="">Selecciona una categoría</option>
+                        <option value="1">Familia</option>
+                        <option value="2">Amigos</option>
+                        <option value="3">Trabajo</option>
+                        <option value="4">Compañeros</option>
+                        <option value="5">Clientes</option>
+                        <option value="6">Otros</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes_input" class="form-label">Notas (opcional)</label>
+                    <textarea id="notes_input" class="form-textarea" rows="3" 
+                              placeholder="Notas adicionales sobre este contacto"></textarea>
+                </div>
+                
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-outline" onclick="CallTech.closeModal('addContactModal')">
+                        Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        Agregar Contacto
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+.public-profile-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.public-profile-header {
+    text-align: center;
+    margin-bottom: 3rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    border-radius: var(--border-radius);
+}
+
+.profile-avatar-large {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+}
+
+.profile-name-large {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.profile-company-large {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin-bottom: 1rem;
+}
+
+.profile-bio-large {
+    font-size: 1rem;
+    opacity: 0.8;
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+.contact-info-section {
+    margin-bottom: 3rem;
+}
+
+.section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.contact-info-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.contact-info-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    transition: var(--transition);
+}
+
+.contact-info-item:hover {
+    box-shadow: var(--shadow-medium);
+    transform: translateY(-2px);
+}
+
+.contact-info-icon {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.contact-info-content {
+    flex: 1;
+}
+
+.contact-info-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.25rem;
+}
+
+.contact-info-value {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+}
+
+.contact-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: 20px;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.contact-action-btn:hover {
+    background: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+.main-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.btn-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.additional-info {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 3rem;
+}
+
+.info-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.info-icon {
+    color: var(--secondary-color);
+    flex-shrink: 0;
+}
+
+.info-content h4 {
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+}
+
+.info-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.public-profile-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem 0;
+    border-top: 1px solid var(--border-color);
+}
+
+.calltech-branding {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.logo-small {
+    color: var(--primary-color);
+}
+
+.get-calltech-btn {
+    padding: 0.5rem 1rem;
+    background: var(--primary-color);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.get-calltech-btn:hover {
+    background: var(--accent-color);
+    transform: translateY(-1px);
+}
+
+@media (max-width: 640px) {
+    .public-profile-container {
+        padding: 1rem;
+    }
+    
+    .contact-info-item {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .public-profile-footer {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+}
+</style>
+
+<script>
+function addToContacts() {
+    CallTech.openModal('addContactModal');
+}
+
+function shareProfile() {
+    const shareData = {
+        title: '{{ profile.name }} - CallTech',
+        text: 'Conecta con {{ profile.name }} en CallTech',
+        url: window.location.href
+    };
+
+    if (navigator.share) {
+        navigator.share(shareData)
+            .then(() => CallTech.showNotification('Perfil compartido exitosamente', 'success'))
+            .catch(console.error);
+    } else {
+        navigator.clipboard.writeText(window.location.href).then(() => {
+            CallTech.showNotification('Enlace copiado al portapapeles', 'success');
+        });
+    }
+}
+
+function downloadVCard() {
+    const vcard = `BEGIN:VCARD
+VERSION:3.0
+FN:{{ profile.name }}
+{% if profile.company %}ORG:{{ profile.company }}{% endif %}
+{% if profile.phone %}TEL:{{ profile.phone }}{% endif %}
+{% if profile.email %}EMAIL:{{ profile.email }}{% endif %}
+{% if profile.bio %}NOTE:{{ profile.bio }}{% endif %}
+END:VCARD`;
+
+    const blob = new Blob([vcard], { type: 'text/vcard' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = '{{ profile.name }}.vcf';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    window.URL.revokeObjectURL(url);
+    
+    CallTech.showNotification('vCard descargado exitosamente', 'success');
+}
+
+// Manejar formulario de agregar contacto
+document.getElementById('addContactForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData();
+    formData.append('name', '{{ profile.name }}');
+    formData.append('phone', '{{ profile.phone or "" }}');
+    formData.append('email', '{{ profile.email or "" }}');
+    formData.append('company', '{{ profile.company or "" }}');
+    formData.append('category_id', document.getElementById('category_select').value);
+    formData.append('notes', document.getElementById('notes_input').value);
+    
+    // Simular agregado de contacto (en una implementación real, esto haría una petición al servidor)
+    setTimeout(() => {
+        CallTech.closeModal('addContactModal');
+        CallTech.showNotification('Contacto agregado exitosamente', 'success');
+    }, 1000);
+});
+
+// Animaciones de entrada
+document.addEventListener('DOMContentLoaded', function() {
+    const elements = document.querySelectorAll('.public-profile-header, .contact-info-item, .info-card, .main-actions > *');
+    
+    elements.forEach((element, index) => {
+        element.style.opacity = '0';
+        element.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            element.style.transition = 'all 0.6s ease';
+            element.style.opacity = '1';
+            element.style.transform = 'translateY(0)';
+        }, 100 + index * 100);
+    });
+});
+</script>
+{% endblock %}

@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+
+{% block title %}Agregar Contacto - CallTech{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title gradient-text">Agregar Nuevo Contacto</h2>
+        <a href="{{ url_for('index') }}" class="btn btn-outline">
+            <heroicon-outline-arrow-left class="w-5 h-5"></heroicon-outline-arrow-left>
+            Volver
+        </a>
+    </div>
+
+    {% if duplicates %}
+    <div class="notification warning">
+        <div class="notification-icon">⚠️</div>
+        <div>
+            <strong>Posibles contactos duplicados encontrados:</strong>
+            <ul style="margin: 0.5rem 0 0 1rem;">
+                {% for duplicate in duplicates %}
+                <li>
+                    <strong>{{ duplicate.contact.name }}</strong> 
+                    ({{ 'teléfono' if duplicate.type == 'phone' else 'email' if duplicate.type == 'email' else 'nombre similar' }})
+                </li>
+                {% endfor %}
+            </ul>
+            <p style="margin-top: 0.5rem;">¿Deseas continuar agregando este contacto?</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <form method="POST" id="contactForm">
+        <div class="form-group">
+            <label for="name" class="form-label">Nombre *</label>
+            <input type="text" id="name" name="name" class="form-input" required 
+                   value="{{ form_data.name if form_data else '' }}"
+                   placeholder="Ingresa el nombre completo">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="phone" class="form-label">Teléfono</label>
+                <input type="tel" id="phone" name="phone" class="form-input" 
+                       value="{{ form_data.phone if form_data else '' }}"
+                       placeholder="+1 (234) 567-8900">
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-input" 
+                       value="{{ form_data.email if form_data else '' }}"
+                       placeholder="ejemplo@correo.com">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="company" class="form-label">Empresa</label>
+            <input type="text" id="company" name="company" class="form-input" 
+                   value="{{ form_data.company if form_data else '' }}"
+                   placeholder="Nombre de la empresa">
+        </div>
+
+        <div class="form-group">
+            <label for="category_id" class="form-label">Categoría *</label>
+            <select id="category_id" name="category_id" class="form-select" required>
+                <option value="">Selecciona una categoría</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}" 
+                        {% if form_data and form_data.category_id|string == category.id|string %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="notes" class="form-label">Notas</label>
+            <textarea id="notes" name="notes" class="form-textarea" rows="4" 
+                      placeholder="Notas adicionales sobre el contacto">{{ form_data.notes if form_data else '' }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+            <a href="{{ url_for('index') }}" class="btn btn-outline">
+                <heroicon-outline-x-mark class="w-5 h-5"></heroicon-outline-x-mark>
+                Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <heroicon-outline-check class="w-5 h-5"></heroicon-outline-check>
+                Guardar Contacto
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Modal de confirmación para duplicados -->
+<div id="duplicateModal" class="modal-overlay">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Contacto Duplicado Detectado</h3>
+            <button class="modal-close">&times;</button>
+        </div>
+        <div class="modal-body">
+            <p>Se encontró un contacto similar. ¿Qué deseas hacer?</p>
+            <div id="duplicateInfo"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="closeModal('duplicateModal')">Cancelar</button>
+            <button class="btn btn-secondary" onclick="mergeDuplicate()">Fusionar</button>
+            <button class="btn btn-primary" onclick="saveDuplicate()">Guardar de todas formas</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('contactForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Validación en tiempo real
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    
+    // Formatear teléfono mientras se escribe
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length >= 6) {
+            if (value.length <= 10) {
+                value = value.replace(/(\d{3})(\d{3})(\d{0,4})/, '($1) $2-$3');
+            } else {
+                value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{0,4})/, '+$1 ($2) $3-$4');
+            }
+        }
+        this.value = value;
+    });
+    
+    // Validación de email
+    emailInput.addEventListener('blur', function() {
+        if (this.value && !isValidEmail(this.value)) {
+            showFieldError(this, 'El formato del email no es válido');
+        } else {
+            clearFieldError(this);
+        }
+    });
+    
+    // Verificación de duplicados
+    let checkTimeout;
+    [nameInput, phoneInput, emailInput].forEach(input => {
+        input.addEventListener('input', function() {
+            clearTimeout(checkTimeout);
+            checkTimeout = setTimeout(checkForDuplicates, 500);
+        });
+    });
+    
+    // Envío del formulario
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar campos requeridos
+        if (!nameInput.value.trim()) {
+            showFieldError(nameInput, 'El nombre es requerido');
+            nameInput.focus();
+            return;
+        }
+        
+        if (!document.getElementById('category_id').value) {
+            showFieldError(document.getElementById('category_id'), 'La categoría es requerida');
+            document.getElementById('category_id').focus();
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        // Enviar formulario
+        setTimeout(() => {
+            this.submit();
+        }, 500);
+    });
+    
+    // Animación de entrada del formulario
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+        group.style.opacity = '0';
+        group.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            group.style.transition = 'all 0.5s ease';
+            group.style.opacity = '1';
+            group.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+
+async function checkForDuplicates() {
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    
+    const data = {
+        name: nameInput.value.trim(),
+        phone: phoneInput.value.trim(),
+        email: emailInput.value.trim()
+    };
+    
+    if (!data.name && !data.phone && !data.email) {
+        hideDuplicateWarning();
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/check-duplicate', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.has_duplicates) {
+            showDuplicateWarning(result.duplicates);
+        } else {
+            hideDuplicateWarning();
+        }
+    } catch (error) {
+        console.error('Error checking duplicates:', error);
+    }
+}
+
+function showDuplicateWarning(duplicates) {
+    let warningDiv = document.getElementById('duplicateWarning');
+    
+    if (!warningDiv) {
+        warningDiv = document.createElement('div');
+        warningDiv.id = 'duplicateWarning';
+        warningDiv.className = 'notification warning';
+        
+        const form = document.getElementById('contactForm');
+        form.parentNode.insertBefore(warningDiv, form);
+    }
+    
+    const duplicateList = duplicates.map(dup => 
+        `<li><strong>${dup.contact.name}</strong> (${dup.type === 'phone' ? 'teléfono' : dup.type === 'email' ? 'email' : 'nombre similar'})</li>`
+    ).join('');
+    
+    warningDiv.innerHTML = `
+        <div class="notification-icon">⚠️</div>
+        <div>
+            <strong>Posibles contactos duplicados encontrados:</strong>
+            <ul style="margin: 0.5rem 0 0 1rem;">${duplicateList}</ul>
+        </div>
+    `;
+}
+
+function hideDuplicateWarning() {
+    const warningDiv = document.getElementById('duplicateWarning');
+    if (warningDiv) {
+        warningDiv.remove();
+    }
+}
+
+function showFieldError(field, message) {
+    clearFieldError(field);
+    
+    field.classList.add('error');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+}
+
+function clearFieldError(field) {
+    field.classList.remove('error');
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+</script>
+{% endblock %}

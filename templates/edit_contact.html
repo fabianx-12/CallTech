@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+
+{% block title %}Editar {{ contact.name }} - CallTech{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+            <a href="{{ url_for('view_contact', id=contact.id) }}" class="btn btn-outline" style="padding: 0.5rem;">
+                <heroicon-outline-arrow-left class="w-5 h-5"></heroicon-outline-arrow-left>
+            </a>
+            <h2 class="card-title gradient-text">Editar Contacto</h2>
+        </div>
+    </div>
+
+    <form method="POST" id="editForm">
+        <div class="form-group">
+            <label for="name" class="form-label">Nombre *</label>
+            <input type="text" id="name" name="name" class="form-input" required 
+                   value="{{ contact.name }}" placeholder="Ingresa el nombre completo">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+                <label for="phone" class="form-label">Teléfono</label>
+                <input type="tel" id="phone" name="phone" class="form-input" 
+                       value="{{ contact.phone }}" placeholder="+1 (234) 567-8900">
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" id="email" name="email" class="form-input" 
+                       value="{{ contact.email }}" placeholder="ejemplo@correo.com">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="company" class="form-label">Empresa</label>
+            <input type="text" id="company" name="company" class="form-input" 
+                   value="{{ contact.company }}" placeholder="Nombre de la empresa">
+        </div>
+
+        <div class="form-group">
+            <label for="category_id" class="form-label">Categoría *</label>
+            <select id="category_id" name="category_id" class="form-select" required>
+                <option value="">Selecciona una categoría</option>
+                {% for category in categories %}
+                <option value="{{ category.id }}" 
+                        {% if contact.category_id == category.id %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="notes" class="form-label">Notas</label>
+            <textarea id="notes" name="notes" class="form-textarea" rows="4" 
+                      placeholder="Notas adicionales sobre el contacto">{{ contact.notes }}</textarea>
+        </div>
+
+        <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+            <a href="{{ url_for('view_contact', id=contact.id) }}" class="btn btn-outline">
+                <heroicon-outline-x-mark class="w-5 h-5"></heroicon-outline-x-mark>
+                Cancelar
+            </a>
+            <button type="submit" class="btn btn-primary" id="submitBtn">
+                <heroicon-outline-check class="w-5 h-5"></heroicon-outline-check>
+                Guardar Cambios
+            </button>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('editForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Validación en tiempo real
+    const nameInput = document.getElementById('name');
+    const phoneInput = document.getElementById('phone');
+    const emailInput = document.getElementById('email');
+    
+    // Formatear teléfono mientras se escribe
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length >= 6) {
+            if (value.length <= 10) {
+                value = value.replace(/(\d{3})(\d{3})(\d{0,4})/, '($1) $2-$3');
+            } else {
+                value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{0,4})/, '+$1 ($2) $3-$4');
+            }
+        }
+        this.value = value;
+    });
+    
+    // Validación de email
+    emailInput.addEventListener('blur', function() {
+        if (this.value && !isValidEmail(this.value)) {
+            showFieldError(this, 'El formato del email no es válido');
+        } else {
+            clearFieldError(this);
+        }
+    });
+    
+    // Envío del formulario
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar campos requeridos
+        if (!nameInput.value.trim()) {
+            showFieldError(nameInput, 'El nombre es requerido');
+            nameInput.focus();
+            return;
+        }
+        
+        if (!document.getElementById('category_id').value) {
+            showFieldError(document.getElementById('category_id'), 'La categoría es requerida');
+            document.getElementById('category_id').focus();
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        // Enviar formulario
+        setTimeout(() => {
+            this.submit();
+        }, 500);
+    });
+    
+    // Animación de entrada del formulario
+    const formGroups = document.querySelectorAll('.form-group');
+    formGroups.forEach((group, index) => {
+        group.style.opacity = '0';
+        group.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            group.style.transition = 'all 0.5s ease';
+            group.style.opacity = '1';
+            group.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+
+function showFieldError(field, message) {
+    clearFieldError(field);
+    
+    field.classList.add('error');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+}
+
+function clearFieldError(field) {
+    field.classList.remove('error');
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+</script>
+{% endblock %}

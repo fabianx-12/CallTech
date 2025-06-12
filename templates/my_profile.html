@@ -1,0 +1,389 @@
+{% extends "base.html" %}
+
+{% block title %}Mi Perfil - CallTech{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2 class="card-title gradient-text">Mi Perfil Personal</h2>
+        <a href="{{ url_for('share_profile') }}" class="btn btn-secondary">
+            <heroicon-outline-share class="w-5 h-5"></heroicon-outline-share>
+            Compartir Perfil
+        </a>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 2rem;">
+        <!-- Columna izquierda: Avatar y estadísticas -->
+        <div>
+            <div class="profile-avatar-section">
+                <div class="profile-avatar">
+                    {{ profile.name|initials }}
+                </div>
+                <h3 class="profile-name">{{ profile.name }}</h3>
+                {% if profile.company %}
+                <div class="profile-company">{{ profile.company }}</div>
+                {% endif %}
+            </div>
+
+            <div class="profile-stats">
+                <div class="stat-item">
+                    <div class="stat-number">{{ profile.share_code }}</div>
+                    <div class="stat-label">Código de Amigo</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">{{ profile.created_date.strftime('%d/%m/%Y') }}</div>
+                    <div class="stat-label">Miembro desde</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha: Formulario de edición -->
+        <div>
+            <form method="POST" action="{{ url_for('update_profile') }}" id="profileForm">
+                <div class="form-group">
+                    <label for="name" class="form-label">Nombre *</label>
+                    <input type="text" id="name" name="name" class="form-input" required 
+                           value="{{ profile.name }}" placeholder="Tu nombre completo">
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="phone" class="form-label">Teléfono</label>
+                        <input type="tel" id="phone" name="phone" class="form-input" 
+                               value="{{ profile.phone or '' }}" placeholder="+1 (234) 567-8900">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" id="email" name="email" class="form-input" 
+                               value="{{ profile.email or '' }}" placeholder="tu@email.com">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="company" class="form-label">Empresa</label>
+                    <input type="text" id="company" name="company" class="form-input" 
+                           value="{{ profile.company or '' }}" placeholder="Tu empresa">
+                </div>
+
+                <div class="form-group">
+                    <label for="bio" class="form-label">Biografía</label>
+                    <textarea id="bio" name="bio" class="form-textarea" rows="4" 
+                              placeholder="Cuéntanos sobre ti...">{{ profile.bio or '' }}</textarea>
+                </div>
+
+                <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 2rem;">
+                    <button type="button" class="btn btn-outline" onclick="resetForm()">
+                        <heroicon-outline-arrow-path class="w-5 h-5"></heroicon-outline-arrow-path>
+                        Restablecer
+                    </button>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <heroicon-outline-check class="w-5 h-5"></heroicon-outline-check>
+                        Guardar Cambios
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Sección de acciones rápidas -->
+<div class="card">
+    <div class="card-header">
+        <h3 class="card-title">Acciones Rápidas</h3>
+    </div>
+
+    <div class="quick-actions">
+        <a href="{{ url_for('share_profile') }}" class="action-card">
+            <div class="action-icon">
+                <heroicon-outline-qr-code class="w-8 h-8"></heroicon-outline-qr-code>
+            </div>
+            <div class="action-content">
+                <h4>Generar QR</h4>
+                <p>Crea un código QR para compartir tu perfil</p>
+            </div>
+        </a>
+
+        <a href="{{ url_for('share_profile') }}" class="action-card">
+            <div class="action-icon">
+                <heroicon-outline-link class="w-8 h-8"></heroicon-outline-link>
+            </div>
+            <div class="action-content">
+                <h4>Link Personalizado</h4>
+                <p>Obtén un enlace único para tu perfil</p>
+            </div>
+        </a>
+
+        <button class="action-card" onclick="copyFriendCode()">
+            <div class="action-icon">
+                <heroicon-outline-hashtag class="w-8 h-8"></heroicon-outline-hashtag>
+            </div>
+            <div class="action-content">
+                <h4>Código de Amigo</h4>
+                <p>Comparte tu código: {{ profile.share_code }}</p>
+            </div>
+        </button>
+
+        <a href="{{ url_for('index') }}" class="action-card">
+            <div class="action-icon">
+                <heroicon-outline-users class="w-8 h-8"></heroicon-outline-users>
+            </div>
+            <div class="action-content">
+                <h4>Mis Contactos</h4>
+                <p>Ver y gestionar todos tus contactos</p>
+            </div>
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+.profile-avatar-section {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    font-size: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem auto;
+    position: relative;
+}
+
+.profile-avatar:after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, var(--primary-color), var(--secondary-color));
+    z-index: -1;
+    animation: pulse 2s infinite;
+}
+
+.profile-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.profile-company {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+}
+
+.profile-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--background-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.stat-number {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.action-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--surface-color);
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    color: var(--text-primary);
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.action-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-medium);
+    border-color: var(--primary-color);
+}
+
+.action-icon {
+    color: var(--primary-color);
+    flex-shrink: 0;
+}
+
+.action-content h4 {
+    margin: 0 0 0.25rem 0;
+    font-weight: 600;
+}
+
+.action-content p {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+    .card > div {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
+<script>
+const originalFormData = {};
+
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('profileForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // Guardar datos originales del formulario
+    const inputs = form.querySelectorAll('input, textarea');
+    inputs.forEach(input => {
+        originalFormData[input.name] = input.value;
+    });
+    
+    // Formatear teléfono mientras se escribe
+    const phoneInput = document.getElementById('phone');
+    phoneInput.addEventListener('input', function() {
+        let value = this.value.replace(/\D/g, '');
+        if (value.length >= 6) {
+            if (value.length <= 10) {
+                value = value.replace(/(\d{3})(\d{3})(\d{0,4})/, '($1) $2-$3');
+            } else {
+                value = value.replace(/(\d{1})(\d{3})(\d{3})(\d{0,4})/, '+$1 ($2) $3-$4');
+            }
+        }
+        this.value = value;
+    });
+    
+    // Validación de email
+    const emailInput = document.getElementById('email');
+    emailInput.addEventListener('blur', function() {
+        if (this.value && !isValidEmail(this.value)) {
+            showFieldError(this, 'El formato del email no es válido');
+        } else {
+            clearFieldError(this);
+        }
+    });
+    
+    // Envío del formulario
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // Validar nombre requerido
+        const nameInput = document.getElementById('name');
+        if (!nameInput.value.trim()) {
+            showFieldError(nameInput, 'El nombre es requerido');
+            nameInput.focus();
+            return;
+        }
+        
+        // Mostrar indicador de carga
+        submitBtn.classList.add('loading');
+        submitBtn.disabled = true;
+        
+        // Enviar formulario
+        setTimeout(() => {
+            this.submit();
+        }, 500);
+    });
+    
+    // Animaciones de entrada
+    const sections = document.querySelectorAll('.profile-avatar-section, .profile-stats, .form-group, .action-card');
+    sections.forEach((section, index) => {
+        section.style.opacity = '0';
+        section.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            section.style.transition = 'all 0.5s ease';
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+        }, 50 + index * 50);
+    });
+});
+
+function resetForm() {
+    const form = document.getElementById('profileForm');
+    const inputs = form.querySelectorAll('input, textarea');
+    
+    inputs.forEach(input => {
+        input.value = originalFormData[input.name] || '';
+        clearFieldError(input);
+    });
+    
+    CallTech.showNotification('Formulario restablecido', 'info');
+}
+
+function copyFriendCode() {
+    const code = '{{ profile.share_code }}';
+    navigator.clipboard.writeText(code).then(() => {
+        CallTech.showNotification('Código de amigo copiado', 'success');
+    }).catch(() => {
+        // Fallback
+        const textArea = document.createElement('textarea');
+        textArea.value = code;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+        CallTech.showNotification('Código de amigo copiado', 'success');
+    });
+}
+
+function showFieldError(field, message) {
+    clearFieldError(field);
+    
+    field.classList.add('error');
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'field-error';
+    errorDiv.textContent = message;
+    field.parentNode.appendChild(errorDiv);
+}
+
+function clearFieldError(field) {
+    field.classList.remove('error');
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+        existingError.remove();
+    }
+}
+
+function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+}
+</script>
+{% endblock %}

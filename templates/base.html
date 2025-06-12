@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}CallTech - Sistema de Agenda de Contactos{% endblock %}</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='images/logo.svg') }}">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Heroicons -->
+    <script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js" type="module"></script>
+    <script src="https://unpkg.com/heroicons@2.0.18/24/solid/index.js" type="module"></script>
+    
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    <!-- Meta tags adicionales -->
+    <meta name="description" content="CallTech - Sistema moderno de gestión de contactos con categorización, compartir perfil y prevención de duplicados">
+    <meta name="keywords" content="contactos, agenda, CallTech, gestión, organización">
+    <meta name="author" content="CallTech">
+    
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="{{ url_for('index') }}" class="logo">
+                <div class="logo-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
+                </div>
+                <span class="gradient-text">CallTech</span>
+            </a>
+            
+            <ul class="nav-menu">
+                <li>
+                    <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                        <heroicon-outline-home class="w-5 h-5"></heroicon-outline-home>
+                        Contactos
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('add_contact') }}" class="nav-link {% if request.endpoint == 'add_contact' %}active{% endif %}">
+                        <heroicon-outline-plus class="w-5 h-5"></heroicon-outline-plus>
+                        Agregar
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('my_profile') }}" class="nav-link {% if request.endpoint == 'my_profile' %}active{% endif %}">
+                        <heroicon-outline-user class="w-5 h-5"></heroicon-outline-user>
+                        Mi Perfil
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ url_for('share_profile') }}" class="nav-link {% if request.endpoint == 'share_profile' %}active{% endif %}">
+                        <heroicon-outline-share class="w-5 h-5"></heroicon-outline-share>
+                        Compartir
+                    </a>
+                </li>
+                <li>
+                    <button id="themeToggle" class="nav-link" style="background: none; border: none; cursor: pointer;" title="Cambiar tema">
+                        🌙
+                    </button>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Contenido principal -->
+    <main class="container">
+        <!-- Notificaciones Flash -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="notification {{ 'success' if category == 'success' else 'error' if category == 'error' else 'warning' if category == 'warning' else 'info' }}">
+                        <div class="notification-icon">
+                            {% if category == 'success' %}✅
+                            {% elif category == 'error' %}❌
+                            {% elif category == 'warning' %}⚠️
+                            {% else %}ℹ️{% endif %}
+                        </div>
+                        <div class="notification-message">{{ message }}</div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <!-- Contenido de la página -->
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer style="background: var(--surface-color); border-top: 1px solid var(--border-color); padding: 2rem 0; margin-top: 4rem; text-align: center; color: var(--text-secondary);">
+        <div class="nav-container">
+            <p>&copy; 2024 CallTech. Sistema de gestión de contactos moderno y eficiente.</p>
+            <p style="margin-top: 0.5rem; font-size: 0.875rem;">
+                Desarrollado con ❤️ para una mejor organización de contactos
+            </p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    <!-- CSS adicional para estilos de tema oscuro -->
+    <style>
+        [data-theme="dark"] {
+            --background-color: #0f172a;
+            --surface-color: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --border-color: #334155;
+        }
+        
+        [data-theme="dark"] .header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+        }
+        
+        [data-theme="dark"] .contact-card:hover {
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        [data-theme="dark"] .form-input,
+        [data-theme="dark"] .form-select,
+        [data-theme="dark"] .form-textarea {
+            background: var(--surface-color);
+            color: var(--text-primary);
+        }
+        
+        [data-theme="dark"] .search-input {
+            background: var(--surface-color);
+            color: var(--text-primary);
+        }
+        
+        /* Estilos para iconos heroicons */
+        .w-5 { width: 1.25rem; }
+        .h-5 { height: 1.25rem; }
+        .w-6 { width: 1.5rem; }
+        .h-6 { height: 1.5rem; }
+        
+        /* Estilos para errores de campo */
+        .form-input.error,
+        .form-select.error,
+        .form-textarea.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1);
+        }
+        
+        .field-error {
+            color: var(--error-color);
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+        
+        .field-error:before {
+            content: "⚠️";
+            font-size: 0.75rem;
+        }
+        
+        /* Estilos para el efecto ripple */
+        .btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .ripple {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            transform: scale(0);
+            animation: ripple-animation 0.6s linear;
+            pointer-events: none;
+        }
+        
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+        
+        /* Mejoras de accesibilidad */
+        .nav-link:focus,
+        .btn:focus,
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+        
+        /* Indicador de carga */
+        .btn.loading {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        
+        .btn.loading:after {
+            content: "";
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            margin: auto;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        /* Responsive mejoras */
+        @media (max-width: 640px) {
+            .nav-menu {
+                gap: 0.5rem;
+            }
+            
+            .nav-link {
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+            
+            .logo {
+                font-size: 1.25rem;
+            }
+            
+            .logo-icon {
+                width: 32px;
+                height: 32px;
+            }
+        }
+    </style>
+    
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>
