@@ -83,8 +83,6 @@ git push heroku main
 - Build Command: `pip install -r requirements.txt`
 - Start Command: `gunicorn app:app`
 
-Para más detalles sobre el despliegue, consulta [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
-
 ## 🎯 Uso
 
 1. **Gestión de Contactos**
@@ -139,8 +137,6 @@ Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) par
 
 ## 🔗 Enlaces Útiles
 
-- [Guía de Inicio](START_CALLTECH.md)
-- [Guía de Despliegue](DEPLOYMENT_GUIDE.md)
 - [Documentación de Flask](https://flask.palletsprojects.com/)
 
 ## 📞 Soporte
