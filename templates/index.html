@@ -5,22 +5,25 @@
 {% block content %}
 <div class="filters-section">
     <div class="search-box">
-        <heroicon-outline-magnifying-glass class="search-icon w-5 h-5"></heroicon-outline-magnifying-glass>
+        <span class="search-icon">🔍</span>
         <input type="text" id="searchInput" class="search-input" placeholder="Buscar contactos por nombre, teléfono, email o empresa...">
     </div>
     
     <div class="category-filters">
         <a href="{{ url_for('index') }}" class="category-chip {% if not selected_category %}active{% endif %}" style="background: var(--primary-color);">
-            <heroicon-outline-users class="w-5 h-5"></heroicon-outline-users>
-            Todos ({{ contacts|length }})
+            👥 Todos ({{ contacts|length }})
         </a>
         {% for category in categories %}
         <a href="{{ url_for('index', category=category.id) }}" 
            class="category-chip {% if selected_category == category.id %}active{% endif %}"
            style="{% if selected_category == category.id %}background: {{ category.color }};{% endif %}"
            data-category-id="{{ category.id }}">
-            <heroicon-outline-{{ category.icon }} class="w-5 h-5"></heroicon-outline-{{ category.icon }}>
-            {{ category.name }} ({{ category_stats[category.id] }})
+            {% if category.icon == 'users' %}👨‍👩‍👧‍👦
+            {% elif category.icon == 'user-group' %}👥
+            {% elif category.icon == 'briefcase' %}💼
+            {% elif category.icon == 'academic-cap' %}🎓
+            {% elif category.icon == 'heart' %}❤️
+            {% else %}📁{% endif %} {{ category.name }} ({{ category_stats[category.id] }})
         </a>
         {% endfor %}
     </div>
@@ -34,8 +37,7 @@
         </p>
     </div>
     <a href="{{ url_for('add_contact') }}" class="btn btn-primary">
-        <heroicon-outline-plus class="w-5 h-5"></heroicon-outline-plus>
-        Agregar Contacto
+        ➕ Agregar Contacto
     </a>
 </div>
 
@@ -44,51 +46,57 @@
     {% for contact in contacts %}
     <div class="contact-card" data-contact-id="{{ contact.id }}" data-category-id="{{ contact.category_id }}">
         <div style="display: flex; gap: 1rem; align-items: flex-start;">
-            <div class="contact-avatar" style="background: {{ contact.category.color }}">
+            <a href="{{ url_for('view_contact', id=contact.id) }}" class="contact-avatar" style="background: {{ contact.category.color }}; text-decoration: none; cursor: pointer;" title="Ver detalles de {{ contact.name }}">
                 {{ contact.name|initials }}
-            </div>
+            </a>
             <div style="flex: 1;">
                 <h3 class="contact-name">{{ contact.name }}</h3>
                 
                 {% if contact.phone %}
                 <div class="contact-info">
-                    <heroicon-outline-phone class="w-5 h-5"></heroicon-outline-phone>
-                    {{ contact.phone|format_phone }}
+                    📞 {{ contact.phone|format_phone }}
                 </div>
                 {% endif %}
                 
                 {% if contact.email %}
                 <div class="contact-info">
-                    <heroicon-outline-envelope class="w-5 h-5"></heroicon-outline-envelope>
-                    {{ contact.email }}
+                    📧 {{ contact.email }}
                 </div>
                 {% endif %}
                 
                 {% if contact.company %}
                 <div class="contact-info">
-                    <heroicon-outline-building-office class="w-5 h-5"></heroicon-outline-building-office>
-                    {{ contact.company }}
+                    🏢 {{ contact.company }}
                 </div>
                 {% endif %}
                 
                 <div class="contact-category" style="background: {{ contact.category.color }}">
-                    <heroicon-outline-{{ contact.category.icon }} class="w-4 h-4"></heroicon-outline-{{ contact.category.icon }}>
-                    {{ contact.category.name }}
+                    {% if contact.category.icon == 'users' %}👨‍👩‍👧‍👦
+                    {% elif contact.category.icon == 'user-group' %}👥
+                    {% elif contact.category.icon == 'briefcase' %}💼
+                    {% elif contact.category.icon == 'academic-cap' %}🎓
+                    {% elif contact.category.icon == 'heart' %}❤️
+                    {% else %}📁{% endif %} {{ contact.category.name }}
                 </div>
             </div>
         </div>
         
         <div class="contact-actions">
-            <a href="{{ url_for('view_contact', id=contact.id) }}" class="btn btn-outline" title="Ver detalles">
-                <heroicon-outline-eye class="w-5 h-5"></heroicon-outline-eye>
+            {% if contact.phone %}
+            <a href="tel:{{ contact.phone }}" class="btn-icon btn-call" title="Llamar a {{ contact.name }}">
+                📞
             </a>
-            <a href="{{ url_for('edit_contact', id=contact.id) }}" class="btn btn-secondary" title="Editar">
-                <heroicon-outline-pencil class="w-5 h-5"></heroicon-outline-pencil>
+            <a href="sms:{{ contact.phone }}" class="btn-icon btn-message" title="Enviar mensaje a {{ contact.name }}">
+                💬
+            </a>
+            {% endif %}
+            <a href="{{ url_for('edit_contact', id=contact.id) }}" class="btn-icon btn-edit" title="Editar contacto">
+                ✏️
             </a>
             <form action="{{ url_for('delete_contact', id=contact.id) }}" method="POST" style="display: inline;">
-                <button type="submit" class="btn btn-danger" title="Eliminar" 
+                <button type="submit" class="btn-icon btn-delete" title="Eliminar contacto" 
                         onclick="return confirm('¿Estás seguro de que deseas eliminar este contacto?')">
-                    <heroicon-outline-trash class="w-5 h-5"></heroicon-outline-trash>
+                    🗑️
                 </button>
             </form>
         </div>
@@ -107,8 +115,7 @@
         {% endif %}
     </p>
     <a href="{{ url_for('add_contact') }}" class="btn btn-primary">
-        <heroicon-outline-plus class="w-5 h-5"></heroicon-outline-plus>
-        Agregar Contacto
+        ➕ Agregar Contacto
     </a>
 </div>
 {% endif %}

@@ -5,8 +5,8 @@ import os
 from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'calltech-secret-key-2024'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///calltech.db'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'calltech-secret-key-2024')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///calltech.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Inicializar la base de datos

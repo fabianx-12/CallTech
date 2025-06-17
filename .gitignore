@@ -16,6 +16,7 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -23,24 +24,36 @@ var/
 # Virtual Environment
 venv/
 ENV/
+.env
 
-# Database
+# Base de datos
 *.db
 *.sqlite3
+
+# Logs
+*.log
+logs/
 
 # IDE
 .idea/
 .vscode/
 *.swp
 *.swo
-
-# Logs
-*.log
-
-# Local environment
-.env
-.env.local
-
-# System
 .DS_Store
-Thumbs.db
+
+# Archivos temporales
+*.bak
+*.tmp
+*~
+
+# Archivos de configuración local
+instance/
+.env
+.env.*
+!.env.example
+
+# Archivos de caché
+.cache/
+.pytest_cache/
+.coverage
+htmlcov/

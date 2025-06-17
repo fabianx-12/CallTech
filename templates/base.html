@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es" data-theme="light">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,9 +13,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
-    <!-- Heroicons -->
-    <script src="https://unpkg.com/heroicons@2.0.18/24/outline/index.js" type="module"></script>
-    <script src="https://unpkg.com/heroicons@2.0.18/24/solid/index.js" type="module"></script>
     
     <!-- CSS -->
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
@@ -32,42 +29,33 @@
     <header class="header">
         <nav class="nav-container">
             <a href="{{ url_for('index') }}" class="logo">
-                <div class="logo-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                    </svg>
-                </div>
-                <span class="gradient-text">CallTech</span>
+                <span class="gradient-text" style="font-size: 2.5rem; letter-spacing: 0.1em; text-shadow: 0 0 10px rgba(0, 245, 212, 0.3); font-weight: 900;">CallTech</span>
             </a>
             
             <ul class="nav-menu">
                 <li>
                     <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
-                        <heroicon-outline-home class="w-5 h-5"></heroicon-outline-home>
-                        Contactos
+                        🏠 Contactos
                     </a>
                 </li>
                 <li>
                     <a href="{{ url_for('add_contact') }}" class="nav-link {% if request.endpoint == 'add_contact' %}active{% endif %}">
-                        <heroicon-outline-plus class="w-5 h-5"></heroicon-outline-plus>
-                        Agregar
+                        ➕ Agregar
                     </a>
                 </li>
                 <li>
                     <a href="{{ url_for('my_profile') }}" class="nav-link {% if request.endpoint == 'my_profile' %}active{% endif %}">
-                        <heroicon-outline-user class="w-5 h-5"></heroicon-outline-user>
-                        Mi Perfil
+                        👤 Mi Perfil
                     </a>
                 </li>
                 <li>
                     <a href="{{ url_for('share_profile') }}" class="nav-link {% if request.endpoint == 'share_profile' %}active{% endif %}">
-                        <heroicon-outline-share class="w-5 h-5"></heroicon-outline-share>
-                        Compartir
+                        📤 Compartir
                     </a>
                 </li>
                 <li>
                     <button id="themeToggle" class="nav-link" style="background: none; border: none; cursor: pointer;" title="Cambiar tema">
-                        🌙
+                        <span id="themeIcon">🌙</span>
                     </button>
                 </li>
             </ul>
@@ -100,9 +88,9 @@
     <!-- Footer -->
     <footer style="background: var(--surface-color); border-top: 1px solid var(--border-color); padding: 2rem 0; margin-top: 4rem; text-align: center; color: var(--text-secondary);">
         <div class="nav-container">
-            <p>&copy; 2024 CallTech. Sistema de gestión de contactos moderno y eficiente.</p>
+            <p>&copy; 2025 CallTech. Sistema de gestión de contactos moderno y eficiente.</p>
             <p style="margin-top: 0.5rem; font-size: 0.875rem;">
-                Desarrollado con ❤️ para una mejor organización de contactos
+                Desarrollado con ❤️ por Fabian Sneider Caceres Rincon, Yeinner Sebastian Sanchez Suarez, Adolf junior Acuña Garcia
             </p>
         </div>
     </footer>
@@ -112,34 +100,6 @@
     
     <!-- CSS adicional para estilos de tema oscuro -->
     <style>
-        [data-theme="dark"] {
-            --background-color: #0f172a;
-            --surface-color: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #94a3b8;
-            --border-color: #334155;
-        }
-        
-        [data-theme="dark"] .header {
-            background: linear-gradient(135deg, #0f172a, #1e293b);
-        }
-        
-        [data-theme="dark"] .contact-card:hover {
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-        
-        [data-theme="dark"] .form-input,
-        [data-theme="dark"] .form-select,
-        [data-theme="dark"] .form-textarea {
-            background: var(--surface-color);
-            color: var(--text-primary);
-        }
-        
-        [data-theme="dark"] .search-input {
-            background: var(--surface-color);
-            color: var(--text-primary);
-        }
-        
         /* Estilos para iconos heroicons */
         .w-5 { width: 1.25rem; }
         .h-5 { height: 1.25rem; }

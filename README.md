@@ -1,46 +1,46 @@
-# 📱 CallTech - Sistema de Gestión de Contactos
+# CallTech - Sistema de Gestión de Contactos
 
-CallTech es una aplicación web moderna para gestionar contactos de manera eficiente, con características avanzadas de organización y compartición de perfiles.
+## 🔒 Mejoras de Seguridad Implementadas
 
-## ✨ Características Principales
+### ✅ Correcciones Aplicadas (Fase 1)
 
-- 📋 **Gestión de Contactos**
-  - Agregar, editar y eliminar contactos
-  - Detección automática de duplicados
-  - Notas y detalles por contacto
-  - Búsqueda y filtrado avanzado
+#### **Seguridad Crítica**
+- ✅ **SECRET_KEY segura**: Implementada generación automática con `secrets.token_hex(32)`
+- ✅ **Protección CSRF**: Agregado Flask-WTF con CSRFProtect
+- ✅ **Validación de datos**: Sanitización de inputs para prevenir XSS
+- ✅ **Validación de email**: Usando `email-validator` para validación robusta
+- ✅ **Validación de teléfono**: Usando `phonenumbers` para validación internacional
+- ✅ **Manejo de excepciones**: Try-catch con rollback de transacciones
+- ✅ **Límites de tamaño**: MAX_CONTENT_LENGTH configurado (16MB)
 
-- 🎨 **Categorización Inteligente**
-  - Categorías predefinidas: Familia, Amigos, Trabajo, etc.
-  - Códigos de color para fácil identificación
-  - Iconos distintivos por categoría
+#### **Configuración Mejorada**
+- ✅ **Configuración por entornos**: Separación dev/staging/prod
+- ✅ **Variables de entorno**: Uso de .env para configuración sensible
+- ✅ **Encoding corregido**: Problemas de caracteres UTF-8 solucionados
+- ✅ **Puerto unificado**: Consistencia entre config.py y app.py (5000)
 
-- 🔄 **Compartición de Perfil**
-  - Generación de códigos QR
-  - Enlaces compartibles
-  - Perfil público personalizable
+#### **Gestión de Recursos**
+- ✅ **Memory leak corregido**: BytesIO cerrado correctamente en QR generation
+- ✅ **Dependencias actualizadas**: Versiones específicas en requirements.txt
 
-- 🎯 **Características Técnicas**
-  - Interfaz responsive
-  - Base de datos SQLite
-  - API REST para operaciones AJAX
-  - Validación de datos en tiempo real
+## 🚀 Instalación y Configuración
 
-## 🚀 Instalación
+### Prerrequisitos
+- Python 3.8+
+- pip
+
+### Instalación
 
 1. **Clonar el repositorio**
 ```bash
-git clone https://github.com/tu-usuario/calltech.git
-cd calltech
+git clone <repository-url>
+cd CallTech
 ```
 
-2. **Crear entorno virtual (recomendado)**
+2. **Crear entorno virtual**
 ```bash
 python -m venv venv
-# Windows
-venv\Scripts\activate
-# Linux/Mac
-source venv/bin/activate
+source venv/bin/activate  # En Windows: venv\Scripts\activate
 ```
 
 3. **Instalar dependencias**
@@ -48,100 +48,91 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-4. **Iniciar la aplicación**
+4. **Configurar variables de entorno**
 ```bash
+cp .env.example .env
+# Editar .env con tus configuraciones
+```
+
+5. **Ejecutar la aplicación**
+```bash
+# Desarrollo
 python app.py
+
+# Producción
+gunicorn app:app
 ```
 
-La aplicación estará disponible en: `http://localhost:5000`
+## 🔧 Configuración de Entorno
 
-## 💻 Requisitos
+### Variables de Entorno (.env)
 
-- Python 3.8 o superior
-- Dependencias principales:
-  - Flask 2.3.3
-  - SQLAlchemy 3.0.5
-  - Pillow 10.0.0
-  - qrcode 7.4.2
-
-## 🌐 Despliegue
-
-### Opción 1: Heroku (Recomendado)
-```bash
-heroku create calltech-agenda
-git push heroku main
+```env
+FLASK_ENV=development
+SECRET_KEY=tu-clave-secreta-super-segura-aqui
+DATABASE_URL=sqlite:///calltech.db
+PORT=5000
+DEBUG=true
 ```
 
-### Opción 2: Railway
-- Conectar con GitHub
-- Seleccionar repositorio
-- Railway detectará automáticamente la configuración
+### Configuraciones por Entorno
 
-### Opción 3: Render
-- Crear Web Service
-- Conectar repositorio
-- Build Command: `pip install -r requirements.txt`
-- Start Command: `gunicorn app:app`
+- **Development**: Debug habilitado, base de datos local
+- **Production**: Configuraciones de seguridad adicionales, cookies seguras
+- **Testing**: Base de datos en memoria, CSRF deshabilitado
 
-## 🎯 Uso
+## 🛡️ Características de Seguridad
 
-1. **Gestión de Contactos**
-   - Agregar nuevo contacto: `/add`
-   - Ver contacto: `/contact/<id>`
-   - Editar contacto: `/edit/<id>`
+### Protección CSRF
+Todos los formularios están protegidos contra ataques Cross-Site Request Forgery.
 
-2. **Perfil Personal**
-   - Configurar perfil: `/my-profile`
-   - Compartir perfil: `/share-profile`
-   - Ver perfil público: `/profile/<code>`
+### Sanitización de Datos
+- Escape HTML automático para prevenir XSS
+- Validación de longitud de campos
+- Validación de formato para emails y teléfonos
 
-3. **API Endpoints**
-   - Lista de contactos: `/api/contacts`
-   - Categorías: `/api/categories`
-   - Verificar duplicados: `/api/check-duplicate`
+### Configuración Segura
+- SECRET_KEY generada automáticamente
+- Cookies seguras en producción
+- Límites de tamaño de archivo
 
-## 🔧 Configuración
+## 📊 Próximas Mejoras (Fase 2)
 
-La configuración se realiza a través de variables de entorno o el archivo `config.py`:
+### Performance
+- [ ] Índices en base de datos
+- [ ] Paginación de contactos
+- [ ] Optimización de consultas duplicadas
 
-- `SECRET_KEY`: Clave secreta para la aplicación
-- `DEBUG`: Modo de depuración (True/False)
-- `PORT`: Puerto para el servidor (default: 5000)
+### Funcionalidad
+- [ ] Rate limiting en APIs
+- [ ] Logging estructurado
+- [ ] Backup automático de datos
 
-## 📚 Estructura del Proyecto
+### Arquitectura
+- [ ] Separación de blueprints
+- [ ] Tests unitarios
+- [ ] CI/CD pipeline
 
-```
-calltech/
-├── app.py           # Aplicación principal
-├── config.py        # Configuración
-├── models.py        # Modelos de datos
-├── utils.py         # Utilidades
-├── static/          # Archivos estáticos
-│   ├── css/
-│   ├── js/
-│   └── images/
-└── templates/       # Plantillas HTML
-```
+## 🐛 Problemas Conocidos
 
-## 🤝 Contribución
+- La validación de teléfonos asume Colombia como país por defecto
+- Sin paginación para listas grandes de contactos
+- Falta implementar rate limiting
 
-1. Fork del repositorio
-2. Crear rama para feature: `git checkout -b feature/NuevaCaracteristica`
-3. Commit cambios: `git commit -am 'Agregar nueva característica'`
-4. Push a la rama: `git push origin feature/NuevaCaracteristica`
-5. Crear Pull Request
+## 📝 Contribuir
+
+1. Fork el proyecto
+2. Crear una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. Commit tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir un Pull Request
 
 ## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para más detalles.
+Este proyecto está bajo la Licencia MIT - ver el archivo [LICENSE](LICENSE) para detalles.
 
-## 🔗 Enlaces Útiles
+## 👥 Desarrolladores
 
-- [Documentación de Flask](https://flask.palletsprojects.com/)
-
-## 📞 Soporte
-
-Para reportar problemas o solicitar nuevas características, por favor crear un issue en el repositorio.
-
----
-Desarrollado con ❤️ usando Flask y SQLAlchemy
+- Fabian Sneider Caceres Rincon
+- Yeinner Sebastian Sanchez Suarez  
+- Adolf junior Acuña Garcia
