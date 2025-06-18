@@ -16,7 +16,6 @@ lib64/
 parts/
 sdist/
 var/
-wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -24,36 +23,28 @@ wheels/
 # Virtual Environment
 venv/
 ENV/
-.env
 
-# Base de datos
+# SQLite database files
 *.db
 *.sqlite3
 
-# Logs
-*.log
-logs/
+# Instance folder
+instance/
 
-# IDE
+# Environment variables
+.env
+.env.*
+
+# IDE specific files
 .idea/
 .vscode/
 *.swp
 *.swo
-.DS_Store
-
-# Archivos temporales
-*.bak
-*.tmp
 *~
 
-# Archivos de configuración local
-instance/
-.env
-.env.*
-!.env.example
+# Logs
+*.log
 
-# Archivos de caché
-.cache/
-.pytest_cache/
-.coverage
-htmlcov/
+# Local development
+.DS_Store
+Thumbs.db
