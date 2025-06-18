@@ -2,29 +2,12 @@ from flask import Flask, render_template, request, jsonify, redirect, url_for, f
 from models import db, Contact, Category, UserProfile, init_default_categories
 from utils import generate_qr_code, check_duplicate_contact, merge_contacts, format_phone_number, validate_email
 import os
-import logging
 from datetime import datetime
 
 app = Flask(__name__)
-
-# Configuración de la aplicación
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'calltech-secret-key-2024')
-
-# Configuración de base de datos - compatible con Heroku Postgres
-database_url = os.environ.get('DATABASE_URL', 'sqlite:///calltech.db')
-# Heroku Postgres URLs start with postgres:// but SQLAlchemy needs postgresql://
-if database_url.startswith('postgres://'):
-    database_url = database_url.replace('postgres://', 'postgresql://', 1)
-
-app.config['SQLALCHEMY_DATABASE_URI'] = database_url
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///calltech.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-# Configuración de logging para Heroku
-if not app.debug:
-    # Configurar logging para producción
-    gunicorn_logger = logging.getLogger('gunicorn.error')
-    app.logger.handlers = gunicorn_logger.handlers
-    app.logger.setLevel(gunicorn_logger.level)
 
 # Inicializar la base de datos
 db.init_app(app)
