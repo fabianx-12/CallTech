@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
-from models import db, Contact, Category, UserProfile, SharedLink, init_default_categories
+from models import db, Contact, Category, UserProfile, init_default_categories
 from utils import generate_qr_code, check_duplicate_contact, merge_contacts, format_phone_number, validate_email
 import os
 from datetime import datetime
@@ -225,7 +225,7 @@ def share_profile():
         return redirect(url_for('my_profile'))
     
     # Generar URL para compartir
-    share_url = url_for('public_profile', code=profile.share_code, _external=True)
+    share_url = url_for('my_profile', _external=True)
     
     # Generar código QR
     qr_code = generate_qr_code(share_url)
@@ -234,12 +234,6 @@ def share_profile():
                          profile=profile, 
                          share_url=share_url,
                          qr_code=qr_code)
-
-@app.route('/profile/<code>')
-def public_profile(code):
-    """Vista pública del perfil compartido"""
-    profile = UserProfile.query.filter_by(share_code=code).first_or_404()
-    return render_template('public_profile.html', profile=profile)
 
 # API endpoints para funcionalidad AJAX
 @app.route('/api/contacts')

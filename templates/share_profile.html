@@ -1,99 +1,37 @@
 {% extends "base.html" %}
 
-{% block title %}Compartir Mi Perfil - CallTech{% endblock %}
+{% block title %}Compartir Perfil - CallTech{% endblock %}
 
 {% block content %}
 <div class="card">
     <div class="card-header">
-        <div style="display: flex; align-items: center; gap: 1rem;">
-            <a href="{{ url_for('my_profile') }}" class="btn btn-outline" style="padding: 0.5rem;">
-                <heroicon-outline-arrow-left class="w-5 h-5"></heroicon-outline-arrow-left>
-            </a>
-            <h2 class="card-title gradient-text">Compartir Mi Perfil</h2>
-        </div>
+        <h2 class="card-title gradient-text">Compartir Mi Perfil</h2>
+        <a href="{{ url_for('my_profile') }}" class="btn btn-outline">
+            <heroicon-outline-arrow-left class="w-5 h-5"></heroicon-outline-arrow-left>
+            Volver
+        </a>
     </div>
 
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 2rem;">
-        <!-- Columna izquierda: QR y enlaces -->
-        <div>
-            <div class="share-section">
-                <h3 class="section-title">Código QR</h3>
-                <div class="qr-container">
-                    <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" 
-                         style="width: 200px; height: 200px; margin: 0 auto;">
-                    <button class="btn btn-outline" onclick="downloadQR()" style="margin-top: 1rem;">
-                        <heroicon-outline-arrow-down-tray class="w-5 h-5"></heroicon-outline-arrow-down-tray>
-                        Descargar QR
-                    </button>
-                </div>
-            </div>
-
-            <div class="share-section">
-                <h3 class="section-title">Link Personalizado</h3>
-                <div class="share-link">
-                    <input type="text" readonly value="{{ share_url }}" 
-                           class="form-input" id="shareUrl">
-                    <button class="btn btn-primary" onclick="copyToClipboard('shareUrl')">
-                        <heroicon-outline-clipboard class="w-5 h-5"></heroicon-outline-clipboard>
-                        Copiar
-                    </button>
-                </div>
-            </div>
-
-            <div class="share-section">
-                <h3 class="section-title">Código de Amigo</h3>
-                <div class="share-code">
-                    <div class="code-display">{{ profile.share_code }}</div>
-                    <button class="btn btn-outline" onclick="copyToClipboard('friendCode')">
-                        <heroicon-outline-clipboard class="w-5 h-5"></heroicon-outline-clipboard>
-                        Copiar Código
-                    </button>
-                </div>
+    <div class="share-options">
+        <!-- Sección de QR -->
+        <div class="share-section">
+            <h3>Código QR</h3>
+            <p>Escanea este código QR para ver mi perfil</p>
+            <div class="qr-container">
+                <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="qr-code">
             </div>
         </div>
 
-        <!-- Columna derecha: Vista previa del perfil -->
-        <div class="preview-section">
-            <h3 class="section-title">Vista Previa</h3>
-            <div class="profile-preview">
-                <div class="profile-header">
-                    <div class="profile-avatar">
-                        {{ profile.name|initials }}
-                    </div>
-                    <h3 class="profile-name">{{ profile.name }}</h3>
-                    {% if profile.company %}
-                    <div class="profile-company">{{ profile.company }}</div>
-                    {% endif %}
-                </div>
-
-                <div class="profile-info">
-                    {% if profile.phone %}
-                    <div class="info-item">
-                        <heroicon-outline-phone class="w-5 h-5"></heroicon-outline-phone>
-                        {{ profile.phone|format_phone }}
-                    </div>
-                    {% endif %}
-
-                    {% if profile.email %}
-                    <div class="info-item">
-                        <heroicon-outline-envelope class="w-5 h-5"></heroicon-outline-envelope>
-                        {{ profile.email }}
-                    </div>
-                    {% endif %}
-
-                    {% if profile.bio %}
-                    <div class="profile-bio">
-                        {{ profile.bio }}
-                    </div>
-                    {% endif %}
-                </div>
-
-                <div class="profile-actions">
-                    <button class="btn btn-primary" onclick="shareProfile()">
-                        <heroicon-outline-share class="w-5 h-5"></heroicon-outline-share>
-                        Compartir Perfil
-                    </button>
-                </div>
+        <!-- Sección de Link -->
+        <div class="share-section">
+            <h3>Link Directo</h3>
+            <p>Comparte este link para mostrar tu perfil</p>
+            <div class="share-link">
+                <input type="text" value="{{ share_url }}" readonly class="form-input" id="shareUrl">
+                <button class="btn btn-primary" onclick="copyShareUrl()">
+                    <heroicon-outline-clipboard class="w-5 h-5"></heroicon-outline-clipboard>
+                    Copiar
+                </button>
             </div>
         </div>
     </div>
@@ -102,28 +40,43 @@
 
 {% block extra_scripts %}
 <style>
+.share-options {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
 .share-section {
-    margin-bottom: 2rem;
-    padding: 1.5rem;
+    text-align: center;
+    padding: 2rem;
     background: var(--surface-color);
     border-radius: var(--border-radius);
     border: 1px solid var(--border-color);
 }
 
-.section-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: var(--text-primary);
+.share-section h3 {
+    margin: 0 0 1rem 0;
+    color: var(--primary-color);
+}
+
+.share-section p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
 }
 
 .qr-container {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    justify-content: center;
     padding: 1rem;
     background: white;
     border-radius: var(--border-radius);
+    box-shadow: var(--shadow-small);
+}
+
+.qr-code {
+    width: 200px;
+    height: 200px;
 }
 
 .share-link {
@@ -131,146 +84,62 @@
     gap: 0.5rem;
 }
 
-.share-code {
-    text-align: center;
-}
-
-.code-display {
-    font-family: monospace;
-    font-size: 1.5rem;
-    padding: 1rem;
-    background: var(--background-color);
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-    letter-spacing: 2px;
-}
-
-.profile-preview {
-    background: var(--surface-color);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    border: 1px solid var(--border-color);
-}
-
-.profile-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.profile-avatar {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-    color: white;
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1rem auto;
-}
-
-.profile-name {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-.profile-company {
-    color: var(--text-secondary);
+.share-link input {
+    flex: 1;
     font-size: 0.875rem;
 }
 
-.profile-info {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.info-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem;
-    background: var(--background-color);
-    border-radius: var(--border-radius);
-}
-
-.profile-bio {
-    padding: 1rem;
-    background: var(--background-color);
-    border-radius: var(--border-radius);
-    white-space: pre-wrap;
-}
-
-.profile-actions {
-    display: flex;
-    justify-content: center;
-}
-
 @media (max-width: 768px) {
-    .card > div {
-        grid-template-columns: 1fr !important;
+    .share-options {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animaciones */
+.share-section {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s ease forwards;
+}
+
+.share-section:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 </style>
 
 <script>
-function copyToClipboard(elementId) {
-    const element = document.getElementById(elementId);
-    const text = elementId === 'friendCode' ? '{{ profile.share_code }}' : element.value;
+function copyShareUrl() {
+    const shareUrl = document.getElementById('shareUrl');
+    shareUrl.select();
+    document.execCommand('copy');
     
-    navigator.clipboard.writeText(text).then(() => {
-        CallTech.showNotification('Copiado al portapapeles', 'success');
-    }).catch(() => {
-        // Fallback
-        if (elementId === 'shareUrl') {
-            element.select();
-        }
-        document.execCommand('copy');
-        CallTech.showNotification('Copiado al portapapeles', 'success');
-    });
+    // Mostrar notificación
+    const button = event.currentTarget;
+    const originalText = button.innerHTML;
+    button.innerHTML = `
+        <heroicon-outline-check class="w-5 h-5"></heroicon-outline-check>
+        Copiado!
+    `;
+    button.classList.add('success');
+    
+    setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove('success');
+    }, 2000);
 }
 
-function downloadQR() {
-    const qrImage = document.querySelector('.qr-container img');
-    const link = document.createElement('a');
-    link.download = 'calltech-profile-qr.png';
-    link.href = qrImage.src;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function shareProfile() {
-    const shareData = {
-        title: '{{ profile.name }} - CallTech',
-        text: 'Conecta conmigo en CallTech',
-        url: '{{ share_url }}'
-    };
-
-    if (navigator.share) {
-        navigator.share(shareData)
-            .then(() => CallTech.showNotification('Perfil compartido exitosamente', 'success'))
-            .catch(console.error);
-    } else {
-        copyToClipboard('shareUrl');
-    }
-}
-
-// Animaciones de entrada
+// Animación al cargar la página
 document.addEventListener('DOMContentLoaded', function() {
-    const sections = document.querySelectorAll('.share-section, .profile-preview');
-    
+    const sections = document.querySelectorAll('.share-section');
     sections.forEach((section, index) => {
-        section.style.opacity = '0';
-        section.style.transform = 'translateY(20px)';
-        setTimeout(() => {
-            section.style.transition = 'all 0.5s ease';
-            section.style.opacity = '1';
-            section.style.transform = 'translateY(0)';
-        }, 100 + index * 100);
+        section.style.animationDelay = `${index * 0.2}s`;
     });
 });
 </script>

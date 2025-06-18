@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import hashlib
 import secrets
 
 db = SQLAlchemy()
@@ -52,7 +51,6 @@ class UserProfile(db.Model):
     company = db.Column(db.String(100), nullable=True)
     bio = db.Column(db.Text, nullable=True)
     share_code = db.Column(db.String(20), unique=True, nullable=False)
-    qr_enabled = db.Column(db.Boolean, default=True)
     created_date = db.Column(db.DateTime, default=datetime.utcnow)
     
     def __init__(self, **kwargs):
@@ -74,25 +72,6 @@ class UserProfile(db.Model):
             'bio': self.bio,
             'share_code': self.share_code
         }
-
-class SharedLink(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user_profile.id'), nullable=False)
-    link_code = db.Column(db.String(50), unique=True, nullable=False)
-    created_date = db.Column(db.DateTime, default=datetime.utcnow)
-    is_active = db.Column(db.Boolean, default=True)
-    
-    # Relación con perfil de usuario
-    user_profile = db.relationship('UserProfile', backref='shared_links')
-    
-    def __init__(self, **kwargs):
-        super(SharedLink, self).__init__(**kwargs)
-        if not self.link_code:
-            self.link_code = self.generate_link_code()
-    
-    def generate_link_code(self):
-        """Genera un código único para el enlace"""
-        return hashlib.md5(f"{self.user_id}{datetime.utcnow()}".encode()).hexdigest()[:16]
 
 def init_default_categories():
     """Inicializa las categorías por defecto"""

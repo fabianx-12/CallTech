@@ -6,10 +6,16 @@
 <div class="card">
     <div class="card-header">
         <h2 class="card-title gradient-text">Mi Perfil Personal</h2>
-        <a href="{{ url_for('share_profile') }}" class="btn btn-secondary">
-            <heroicon-outline-share class="w-5 h-5"></heroicon-outline-share>
-            Compartir Perfil
-        </a>
+        <div class="header-actions" style="display: flex; gap: 1rem;">
+            <a href="{{ url_for('share_profile') }}" class="btn btn-primary">
+                <heroicon-outline-share class="w-5 h-5"></heroicon-outline-share>
+                Compartir Perfil
+            </a>
+            <a href="{{ url_for('index') }}" class="btn btn-secondary">
+                <heroicon-outline-users class="w-5 h-5"></heroicon-outline-users>
+                Ver Contactos
+            </a>
+        </div>
     </div>
 
     <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem; margin-top: 2rem;">
@@ -26,10 +32,6 @@
             </div>
 
             <div class="profile-stats">
-                <div class="stat-item">
-                    <div class="stat-number">{{ profile.share_code }}</div>
-                    <div class="stat-label">Código de Amigo</div>
-                </div>
                 <div class="stat-item">
                     <div class="stat-number">{{ profile.created_date.strftime('%d/%m/%Y') }}</div>
                     <div class="stat-label">Miembro desde</div>
@@ -94,35 +96,15 @@
     </div>
 
     <div class="quick-actions">
-        <a href="{{ url_for('share_profile') }}" class="action-card">
+        <a href="{{ url_for('add_contact') }}" class="action-card">
             <div class="action-icon">
-                <heroicon-outline-qr-code class="w-8 h-8"></heroicon-outline-qr-code>
+                <heroicon-outline-user-plus class="w-8 h-8"></heroicon-outline-user-plus>
             </div>
             <div class="action-content">
-                <h4>Generar QR</h4>
-                <p>Crea un código QR para compartir tu perfil</p>
+                <h4>Agregar Contacto</h4>
+                <p>Añade un nuevo contacto a tu lista</p>
             </div>
         </a>
-
-        <a href="{{ url_for('share_profile') }}" class="action-card">
-            <div class="action-icon">
-                <heroicon-outline-link class="w-8 h-8"></heroicon-outline-link>
-            </div>
-            <div class="action-content">
-                <h4>Link Personalizado</h4>
-                <p>Obtén un enlace único para tu perfil</p>
-            </div>
-        </a>
-
-        <button class="action-card" onclick="copyFriendCode()">
-            <div class="action-icon">
-                <heroicon-outline-hashtag class="w-8 h-8"></heroicon-outline-hashtag>
-            </div>
-            <div class="action-content">
-                <h4>Código de Amigo</h4>
-                <p>Comparte tu código: {{ profile.share_code }}</p>
-            </div>
-        </button>
 
         <a href="{{ url_for('index') }}" class="action-card">
             <div class="action-icon">
@@ -133,6 +115,16 @@
                 <p>Ver y gestionar todos tus contactos</p>
             </div>
         </a>
+
+        <div class="action-card">
+            <div class="action-icon">
+                <heroicon-outline-chart-bar class="w-8 h-8"></heroicon-outline-chart-bar>
+            </div>
+            <div class="action-content">
+                <h4>Estadísticas</h4>
+                <p>Ver estadísticas de tus contactos</p>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
@@ -342,24 +334,6 @@ function resetForm() {
     inputs.forEach(input => {
         input.value = originalFormData[input.name] || '';
         clearFieldError(input);
-    });
-    
-    CallTech.showNotification('Formulario restablecido', 'info');
-}
-
-function copyFriendCode() {
-    const code = '{{ profile.share_code }}';
-    navigator.clipboard.writeText(code).then(() => {
-        CallTech.showNotification('Código de amigo copiado', 'success');
-    }).catch(() => {
-        // Fallback
-        const textArea = document.createElement('textarea');
-        textArea.value = code;
-        document.body.appendChild(textArea);
-        textArea.select();
-        document.execCommand('copy');
-        document.body.removeChild(textArea);
-        CallTech.showNotification('Código de amigo copiado', 'success');
     });
 }
 
