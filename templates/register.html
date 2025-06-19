@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Registro - CallTech{% endblock %}
+
+{% block content %}
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1 class="auth-title">
+                <span class="gradient-text">CallTech</span>
+            </h1>
+            <p class="auth-subtitle">Completa tu información para comenzar a gestionar tus contactos</p>
+        </div>
+
+        <form method="POST" class="auth-form">
+            {{ form.csrf_token }}
+            
+            <div class="form-group">
+                {{ form.name.label(class="form-label") }}
+                {{ form.name(class="form-input" + (" error" if form.name.errors else ""), placeholder="Tu nombre completo") }}
+                {% if form.name.errors %}
+                    <div class="field-error">
+                        {% for error in form.name.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.email.label(class="form-label") }}
+                {{ form.email(class="form-input" + (" error" if form.email.errors else ""), placeholder="tu@email.com") }}
+                {% if form.email.errors %}
+                    <div class="field-error">
+                        {% for error in form.email.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.phone.label(class="form-label") }}
+                {{ form.phone(class="form-input" + (" error" if form.phone.errors else ""), placeholder="Tu número de teléfono") }}
+                {% if form.phone.errors %}
+                    <div class="field-error">
+                        {% for error in form.phone.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                {{ form.submit(class="btn btn-primary btn-full") }}
+            </div>
+        </form>
+
+            <div class="auth-footer">
+                <p class="disclaimer">Esta es una aplicación temporal. Tus datos y contactos se eliminarán al cerrar la sesión.</p>
+                <p class="features">
+                    <i class="fas fa-check text-success"></i> Agregar contactos
+                    <i class="fas fa-check text-success"></i> Buscar contactos
+                    <i class="fas fa-check text-success"></i> Editar contactos
+                </p>
+            </div>
+    </div>
+</div>
+
+<style>
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem 1rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.auth-card {
+    background: var(--surface-color);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 450px;
+    backdrop-filter: blur(10px);
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.auth-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    color: var(--text-secondary);
+    font-size: 1rem;
+    margin: 0;
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+.form-input {
+    padding: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    background: #fafafa;
+}
+
+.form-input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(26, 35, 126, 0.1);
+}
+
+.form-input.error {
+    border-color: var(--error-color);
+}
+
+.field-error {
+    color: var(--error-color);
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.btn-full {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.disclaimer {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-style: italic;
+    margin-bottom: 1rem;
+}
+
+.features {
+    display: flex;
+    justify-content: space-around;
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.features i {
+    color: var(--success-color);
+    margin-right: 0.25rem;
+}
+
+.text-success {
+    color: var(--success-color) !important;
+}
+
+@media (max-width: 480px) {
+    .auth-card {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+    }
+    
+    .auth-title {
+        font-size: 2rem;
+    }
+}
+</style>
+{% endblock %}
