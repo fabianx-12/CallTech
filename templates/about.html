@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div style="padding: 4rem 2rem;">
+    <h1 style="text-align: center; margin-bottom: 3rem; color: #333; font-size: 2.5rem;">Quienes Somos</h1>
+    
+    <div style="display: flex; flex-wrap: wrap; gap: 3rem; justify-content: center; max-width: 1400px; margin: 0 auto;">
+        <!-- Product Owner -->
+        <div style="background: white; border: 3px solid #007bff; border-radius: 20px; padding: 2rem; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <div style="background: #007bff; color: white; text-align: center; padding: 1.5rem; margin: -2rem -2rem 1.5rem -2rem; border-radius: 17px 17px 0 0;">
+                <h3 style="margin: 0; font-size: 1.8rem;">👑 Product Owner</h3>
+            </div>
+            <div style="text-align: center;">
+                <h4 style="color: #007bff; margin-bottom: 1.5rem; font-size: 1.4rem;">Fabian Sneider<br>Caceres Rincon</h4>
+                <div style="margin-bottom: 1.2rem;">
+                    <span style="color: #007bff; font-size: 1.3rem;">📞</span>
+                    <a href="tel:3232886669" style="color: #666; text-decoration: none; margin-left: 0.8rem; font-size: 1.2rem;">3232886669</a>
+                </div>
+                <div>
+                    <span style="color: #007bff; font-size: 1.3rem;">✉️</span>
+                    <a href="mailto:Fabic7550@gmail.com" style="color: #666; text-decoration: none; margin-left: 0.8rem; font-size: 1.2rem; word-break: break-all;">Fabic7550@gmail.com</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Scrum Master -->
+        <div style="background: white; border: 3px solid #28a745; border-radius: 20px; padding: 2rem; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <div style="background: #28a745; color: white; text-align: center; padding: 1.5rem; margin: -2rem -2rem 1.5rem -2rem; border-radius: 17px 17px 0 0;">
+                <h3 style="margin: 0; font-size: 1.8rem;">📊 Scrum Master</h3>
+            </div>
+            <div style="text-align: center;">
+                <h4 style="color: #28a745; margin-bottom: 1.5rem; font-size: 1.4rem;">Yeinner Sebastian<br>Sanchez Suarez</h4>
+                <div style="margin-bottom: 1.2rem;">
+                    <span style="color: #28a745; font-size: 1.3rem;">📞</span>
+                    <a href="tel:3228906507" style="color: #666; text-decoration: none; margin-left: 0.8rem; font-size: 1.2rem;">3228906507</a>
+                </div>
+                <div>
+                    <span style="color: #28a745; font-size: 1.3rem;">✉️</span>
+                    <a href="mailto:yeinnersebastiansanchez@gmail.com" style="color: #666; text-decoration: none; margin-left: 0.8rem; font-size: 1.2rem; word-break: break-all;">yeinnersebastiansanchez@gmail.com</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Developer -->
+        <div style="background: white; border: 3px solid #17a2b8; border-radius: 20px; padding: 2rem; width: 400px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); transition: transform 0.3s ease;">
+            <div style="background: #17a2b8; color: white; text-align: center; padding: 1.5rem; margin: -2rem -2rem 1.5rem -2rem; border-radius: 17px 17px 0 0;">
+                <h3 style="margin: 0; font-size: 1.8rem;">💻 Developer</h3>
+            </div>
+            <div style="text-align: center;">
+                <h4 style="color: #17a2b8; margin-bottom: 1.5rem; font-size: 1.4rem;">Adolf Junior<br>Acuña Garcia</h4>
+                <div style="margin-bottom: 1.2rem;">
+                    <span style="color: #17a2b8; font-size: 1.3rem;">📞</span>
+                    <a href="tel:3217750510" style="color: #666; text-decoration: none; margin-left: 0.8rem; font-size: 1.2rem;">3217750510</a>
+                </div>
+                <div>
+                    <span style="color: #17a2b8; font-size: 1.3rem;">✉️</span>
+                    <a href="mailto:Garciaadolf47@gmail.com" style="color: #666; text-decoration: none; margin-left: 0.8rem; font-size: 1.2rem; word-break: break-all;">Garciaadolf47@gmail.com</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@media (max-width: 1400px) {
+    div[style*="display: flex"] {
+        padding: 2rem;
+    }
+}
+
+@media (max-width: 768px) {
+    div[style*="display: flex"] {
+        flex-direction: column !important;
+        align-items: center !important;
+        padding: 1rem;
+    }
+    
+    div[style*="width: 400px"] {
+        width: 90% !important;
+        max-width: 400px !important;
+        margin-bottom: 2rem;
+    }
+
+    h1[style*="font-size: 2.5rem"] {
+        font-size: 2rem !important;
+    }
+}
+
+div[style*="transition: transform"]:hover {
+    transform: translateY(-10px) !important;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.15) !important;
+}
+
+a:hover {
+    text-decoration: underline !important;
+    opacity: 0.8;
+}
+</style>
+{% endblock %}

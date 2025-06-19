@@ -235,6 +235,11 @@ def share_profile():
                          share_url=share_url,
                          qr_code=qr_code)
 
+@app.route('/about')
+def about():
+    """Página Quienes Somos"""
+    return render_template('about.html')
+
 # API endpoints para funcionalidad AJAX
 @app.route('/api/contacts')
 def api_contacts():
