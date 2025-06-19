@@ -1,91 +1,190 @@
-# CallTech - Gestor de Contactos
+# CallTech - Sistema de Gestión de Contactos
 
-Una aplicación web moderna para gestionar contactos con categorización, búsqueda avanzada y funcionalidades de compartir perfil mediante códigos QR.
+Una aplicación web moderna y eficiente para gestionar contactos profesionales, con características avanzadas de categorización, búsqueda inteligente y compartición de perfiles mediante códigos QR.
 
-## Características
+## 🌟 Características Principales
 
-- ✨ Gestión completa de contactos (CRUD)
-- 🏷️ Categorización de contactos con colores personalizados
-- 🔍 Búsqueda avanzada por nombre, teléfono, email o empresa
-- 📱 Generación de códigos QR para compartir perfiles
-- 👤 Perfil personal personalizable
-- 📊 Estadísticas por categoría
-- 🎨 Interfaz moderna y responsive
-- 🔄 Detección automática de contactos duplicados
+- ✨ **Gestión Completa de Contactos**
+  - Crear, ver, editar y eliminar contactos
+  - Interfaz intuitiva y fácil de usar
+  - Validación de datos en tiempo real
+  - Prevención de duplicados inteligente
 
-## Tecnologías
+- 🏷️ **Categorización Avanzada**
+  - Categorías predefinidas: Familia, Amigos, Trabajo, Compañeros, Clientes
+  - Colores personalizados por categoría
+  - Filtrado rápido por categorías
+  - Estadísticas y métricas por categoría
 
-- **Backend**: Flask (Python)
-- **Base de datos**: SQLAlchemy con SQLite
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Estilos**: Bootstrap 5
-- **QR Codes**: qrcode library
-- **Servidor**: Gunicorn
+- 🔍 **Búsqueda Inteligente**
+  - Búsqueda en tiempo real
+  - Filtros por nombre, teléfono, email o empresa
+  - Resultados instantáneos
+  - Historial de búsquedas recientes
 
-## Instalación Local
+- 📱 **Compartir Perfiles**
+  - Generación de códigos QR únicos
+  - Compartir perfil personal
+  - Escaneo rápido desde dispositivos móviles
+  - Enlaces directos para compartir
 
-1. Clona el repositorio:
+- 🎨 **Diseño Moderno**
+  - Interfaz responsive para todos los dispositivos
+  - Tema claro/oscuro automático
+  - Animaciones suaves
+  - Diseño minimalista y profesional
+
+## 🛠️ Tecnologías Utilizadas
+
+### Backend
+- **Flask** (Python 3.8+)
+  - Routing y manejo de peticiones
+  - Blueprints para modularización
+  - Gestión de sesiones
+  - Validación de formularios
+
+- **SQLAlchemy**
+  - ORM para gestión de base de datos
+  - Migraciones automáticas
+  - Relaciones entre modelos
+  - Consultas optimizadas
+
+### Frontend
+- **HTML5 & CSS3**
+  - Semántica moderna
+  - Flexbox y Grid
+  - Variables CSS
+  - Animaciones y transiciones
+
+- **JavaScript**
+  - Validación en tiempo real
+  - Actualizaciones dinámicas
+  - Gestión de eventos
+  - AJAX para peticiones asíncronas
+
+- **Bootstrap 5**
+  - Sistema de grid responsive
+  - Componentes predefinidos
+  - Personalización de temas
+  - Utilidades CSS
+
+### Herramientas Adicionales
+- **qrcode**: Generación de códigos QR
+- **Gunicorn**: Servidor WSGI de producción
+- **SQLite**: Base de datos ligera y portable
+
+## 📦 Instalación y Configuración
+
+### Requisitos Previos
+- Python 3.8 o superior
+- pip (gestor de paquetes de Python)
+- Git
+
+### Pasos de Instalación
+
+1. **Clonar el Repositorio**
 ```bash
 git clone <url-del-repositorio>
 cd calltech
 ```
 
-2. Crea un entorno virtual:
+2. **Crear y Activar Entorno Virtual**
 ```bash
+# Windows
 python -m venv venv
-source venv/bin/activate  # En Windows: venv\Scripts\activate
+venv\Scripts\activate
+
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
 ```
 
-3. Instala las dependencias:
+3. **Instalar Dependencias**
 ```bash
 pip install -r requirements.txt
 ```
 
-4. Ejecuta la aplicación:
+4. **Configurar Variables de Entorno**
+```bash
+# Windows
+set FLASK_APP=app.py
+set FLASK_ENV=development
+
+# Linux/Mac
+export FLASK_APP=app.py
+export FLASK_ENV=development
+```
+
+5. **Inicializar Base de Datos**
+```bash
+flask db upgrade
+```
+
+6. **Ejecutar la Aplicación**
 ```bash
 python app.py
 ```
 
-La aplicación estará disponible en `http://localhost:5000`
-
-## Estructura del Proyecto
+## 📁 Estructura del Proyecto
 
 ```
 calltech/
 ├── app.py              # Aplicación principal Flask
 ├── models.py           # Modelos de base de datos
+├── forms.py            # Formularios y validación
 ├── utils.py            # Funciones utilitarias
-├── config.py           # Configuraciones
+├── config.py          # Configuraciones
 ├── wsgi.py            # Punto de entrada WSGI
-├── migrations.py       # Scripts de migración
-├── requirements.txt    # Dependencias Python
-├── static/            # Archivos estáticos (CSS, JS, imágenes)
-├── templates/         # Plantillas HTML
-└── instance/          # Archivos de instancia (ignorados en git)
+├── migrations/        # Scripts de migración
+├── static/           # Archivos estáticos
+│   ├── css/         # Estilos CSS
+│   ├── js/          # Scripts JavaScript
+│   └── images/      # Imágenes y recursos
+├── templates/        # Plantillas HTML
+│   ├── base.html    # Plantilla base
+│   ├── index.html   # Página principal
+│   └── ...          # Otras plantillas
+└── instance/        # Datos de instancia
 ```
 
-## Desarrollo
+## 👥 Equipo de Desarrollo
 
-### Agregar nuevas funcionalidades
+- **Fabian Sneider Caceres Rincon** - Product Owner
+  - 📞 3232886669
+  - ✉️ Fabic7550@gmail.com
 
-1. Modifica los modelos en `models.py` si es necesario
-2. Actualiza las rutas en `app.py`
-3. Crea/modifica plantillas en `templates/`
-4. Actualiza estilos en `static/css/style.css`
-5. Ejecuta migraciones si hay cambios en la BD
+- **Yeinner Sebastian Sanchez Suarez** - Scrum Master
+  - 📞 3228906507
+  - ✉️ yeinnersebastiansanchez@gmail.com
 
-## Contribuir
+- **Adolf Junior Acuña Garcia** - Developer
+  - 📞 3217750510
+  - ✉️ Garciaadolf47@gmail.com
+
+## 🤝 Contribuir
 
 1. Fork el proyecto
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-funcionalidad`)
-3. Commit tus cambios (`git commit -am 'Agregar nueva funcionalidad'`)
-4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Crea un Pull Request
+2. Crea tu rama de feature (`git checkout -b feature/NuevaFuncionalidad`)
+3. Commit tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
+4. Push a la rama (`git push origin feature/NuevaFuncionalidad`)
+5. Abre un Pull Request
 
-## Licencia
+## 📄 Licencia
 
-Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Este proyecto está bajo la Licencia MIT - ver el archivo `LICENSE` para más detalles.
 
-## Soporte
+## 🆘 Soporte
 
-Si encuentras algún problema o tienes sugerencias, por favor crea un issue en el repositorio.
+Si encuentras algún problema o tienes sugerencias:
+1. Revisa los issues existentes
+2. Crea un nuevo issue detallando el problema
+3. Incluye pasos para reproducir el error
+4. Adjunta capturas de pantalla si es necesario
+
+## 🔄 Actualizaciones Futuras
+
+- [ ] Implementación de autenticación de usuarios
+- [ ] Sincronización con servicios en la nube
+- [ ] Exportación de contactos en múltiples formatos
+- [ ] Integración con redes sociales
+- [ ] API REST para desarrolladores
